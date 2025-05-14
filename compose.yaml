@@ -5,8 +5,8 @@ services:
     ports:
       - 8080:80
     volumes:
-      - ./frontend:/usr/share/nginx/html
-      - ./nginx.conf:/etc/nginx/default.conf.template
+      - ./nginx/default.conf.template:/etc/nginx/nginx.conf:ro
+      - ./frontend:/usr/share/nginx/html/frontend:ro
     depends_on:
       - core-service
       - math-service
