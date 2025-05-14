@@ -6,7 +6,7 @@ upstream math-upstream {
    server math-service:80;
 }
 
-map $http_x_rpc_method $app__route {
+map $http_x_rpc_method $target_service {
    hostnames;
    
    math.*  math-service:80;
@@ -41,7 +41,7 @@ server {
          return 400 "Bad Request - Content-Type must be application/json";
       }
 
-      proxy_pass http://$app__route;
+      proxy_pass http://$target_service;
       
    }
 }
