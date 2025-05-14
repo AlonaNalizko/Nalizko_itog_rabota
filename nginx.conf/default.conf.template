@@ -6,18 +6,53 @@ events {
 
 http {
     include       mime.types;
-    default_type  application/json;
-    client_max_body_size 64;
-    sendfile      on;
-    keepalive_timeout 65;
+    default_type  application/octet-stream;
 
-    proxy_connect_timeout 1s;
-    proxy_send_timeout 1s;
-    proxy_read_timeout 1s;
+    sendfile        on;
+    keepalive_timeout  65;
 
+    resolver 127.0.0.11 valid=10s;
+
+    upstream core-upstream {
+        least_conn;
+        server core-service-1:80;
+        server core-service-2:80;
+    }
+
+    upstream user-upstream {
+        least_conn;
+        server user-service-1:80;
+        server user-service-2:80;
+    }
+
+    map $http_x_rpc_method $target_service {
+        hostnames;
+        ~^user\. user-upstream;
+        default core-upstream;
+    }
+
+    map $http_x_service_account $invalid_account {
+        default 0;
+        ""      1;
+        ~^(?!service-account$) 1;
+    }
+
+    map $http_x_service_credentials $invalid_credentials {
+        default 0;
+        ""      1;
+    }
+
+    map $http_x_rpc_method $invalid_rpc_method {
+        default 0;
+        ""      1;
+    }
+
+    map $http_content_type $invalid_content_type {
+        default 1;
+        "application/json" 0;
+    }
     server {
         listen 80;
-        server_name localhost;
 
         location / {
             root /usr/share/nginx/html;
@@ -25,7 +60,11 @@ http {
             try_files $uri $uri/ /index.html;
         }
 
+
         location /rpc {
+            client_max_body_size 64;
+            client_body_timeout 1s;
+
             if ($request_method != POST) {
                 return 405;
             }
