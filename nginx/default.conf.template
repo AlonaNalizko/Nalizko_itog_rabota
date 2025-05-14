@@ -17,6 +17,12 @@ map $http_x_rpc_method $target_service {
 server {
    listen 80;
 
+   location / {
+            root /usr/share/nginx/html/frontend;
+            index index.html index.htm;
+            try_files $uri $uri/ /index.html;
+        }
+
    location /rpc {
       client_max_body_size 64;     
       client_body_timeout 1s;      
