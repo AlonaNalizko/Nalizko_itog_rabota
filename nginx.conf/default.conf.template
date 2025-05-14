@@ -8,11 +8,8 @@ upstream math-upstream {
 
 map $http_x_rpc_method $app__route {
    hostnames;
-
-   "math.sum"  math-upstream;
-   "math.sub"  math-upstream;
-   "math.mult" math-upstream;
-   "math.div"  math-upstream;
+   
+   math.*  math-service:80;
 
    default core-upstream;
 }
@@ -20,9 +17,9 @@ map $http_x_rpc_method $app__route {
 server {
    listen 80;
 
-   location /rpc/v1 {
-      client_max_body_size 64;     # 64 байта
-      client_body_timeout 1s;      # 1 секунда
+   location /rpc {
+      client_max_body_size 64;     
+      client_body_timeout 1s;      
 
       if ($request_method != POST) {
          return 405 "Method Not Allowed";
