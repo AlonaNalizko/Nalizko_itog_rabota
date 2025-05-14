@@ -1,0 +1,29 @@
+services:
+  nginx:
+    image: nginx:mainline-alpine3.21
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/default.conf.template
+    depends_on:
+      - core-service
+      - math-service
+
+  core-service:
+    image: alpine
+    command: /bin/core-service
+    volumes:
+      - ./bin/core-service:/bin/core-service
+    expose:
+      - "80"
+
+
+  math-service:
+    image: alpine
+    command: /bin/math-service
+    volumes:
+      - ./bin/math-service:/bin/math-service
+    expose:
+      - "80"
