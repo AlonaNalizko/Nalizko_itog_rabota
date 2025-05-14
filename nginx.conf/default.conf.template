@@ -21,41 +21,48 @@ http {
         server math-service:80;
     }
 
+    # Определение целевого сервиса по X-Rpc-Method
     map $http_x_rpc_method $target_service {
         hostnames;
 
-        ~^math\. math-upstream;
-        default core-upstream;
+        "math.sum"  math-upstream;
+        "math.sub"  math-upstream;
+        "math.mult" math-upstream;
+        "math.div"  math-upstream;
+        default     core-upstream;
     }
 
+    # Проверка Client ID
     map $http_x_client_id $invalid_client_id {
         hostnames;
 
-        default 0;
-        ""      1;
         "sirius-frontend" 0;
+        default           1;
     }
 
+    # Проверка Client Secret (не пустой)
     map $http_x_client_secret $invalid_client_secret {
         hostnames;
 
-        default 1;
         ""      1;
-        ~.      0;  
+        " "     1;
+        default 0;
     }
 
+    # Проверка наличия X-Rpc-Method
     map $http_x_rpc_method $invalid_rpc_method {
         hostnames;
 
-        default 0;
         ""      1;
+        default 0;
     }
 
+    # Проверка content-type
     map $http_content_type $invalid_content_type {
         hostnames;
 
-        default 1;
         "application/json" 0;
+        default            1;
     }
 
     server {
