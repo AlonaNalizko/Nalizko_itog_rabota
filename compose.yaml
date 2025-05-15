@@ -17,7 +17,7 @@ services:
   core-service:
     build:
       context: .
-      dockerfile: ./core-service.DockerFile
+      dockerfile: core-service.DockerFile
     container_name: core-service
     networks:
       - app-network
@@ -25,7 +25,7 @@ services:
   math-service:
     build:
       context: .
-      dockerfile: ./math-service.DockerFile
+      dockerfile: math-service.DockerFile
     container_name: math-service
     networks:
       - app-network
